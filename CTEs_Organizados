@@ -1,0 +1,45 @@
+Sub OrganizarCTEs()
+    Dim wsOrigem As Worksheet
+    Dim wsDestino As Worksheet
+    Dim linOrigem As Long, linDestino As Long
+    Dim col As Long, ultimaColCTE As Long
+    Dim ultimaLinha As Long
+    Dim fatura As String
+    Dim cte As String
+    Dim colFatura As Long
+
+    ' Define a aba atual como origem
+    Set wsOrigem = ActiveSheet
+    
+    ' Cria uma nova aba para o resultado
+    Set wsDestino = Worksheets.Add
+    wsDestino.Name = "CTEs_Organizados"
+
+    ' Cria os cabeçalhos na nova aba
+    wsDestino.Cells(1, 1).Value = "CTE"
+    wsDestino.Cells(1, 2).Value = "Fatura"
+    linDestino = 2
+
+    ' Encontra a última linha e a coluna da Fatura
+    ultimaLinha = wsOrigem.Cells(wsOrigem.Rows.Count, "A").End(xlUp).Row
+    colFatura = wsOrigem.Cells(1, wsOrigem.Columns.Count).End(xlToLeft).Column
+
+    ' Repete o processo linha por linha
+    For linOrigem = 2 To ultimaLinha
+        fatura = wsOrigem.Cells(linOrigem, colFatura).Value
+        
+        ' Verifica cada coluna de CTE antes da coluna da Fatura
+        For col = 1 To colFatura - 1
+            cte = wsOrigem.Cells(linOrigem, col).Value
+            
+            ' Se a célula do CTE não estiver vazia, copia para a nova aba
+            If cte <> "" Then
+                wsDestino.Cells(linDestino, 1).Value = cte
+                wsDestino.Cells(linDestino, 2).Value = fatura
+                linDestino = linDestino + 1
+            End If
+        Next col
+    Next linOrigem
+
+    MsgBox "Organização concluída com sucesso!"
+End Sub
