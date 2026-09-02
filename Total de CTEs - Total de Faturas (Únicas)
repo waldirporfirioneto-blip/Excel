@@ -1,0 +1,49 @@
+Sub ContarCTEsEFaturas()
+    Dim wsOrigem As Worksheet
+    Dim linOrigem As Long
+    Dim col As Long, colFatura As Long
+    Dim ultimaLinha As Long
+    Dim totalCTEs As Long
+    Dim fatura As String
+    Dim cte As String
+    Dim faturasUnicas As Collection
+    
+    ' Define a aba ativa
+    Set wsOrigem = ActiveSheet
+    Set faturasUnicas = New Collection
+    totalCTEs = 0
+    
+    ' Encontra a última linha e a coluna da Fatura
+    ultimaLinha = wsOrigem.Cells(wsOrigem.Rows.Count, "A").End(xlUp).Row
+    colFatura = wsOrigem.Cells(1, wsOrigem.Columns.Count).End(xlToLeft).Column
+    
+    ' Ignora erros para não travar quando a fatura for repetida
+    On Error Resume Next
+    
+    For linOrigem = 2 To ultimaLinha
+        fatura = wsOrigem.Cells(linOrigem, colFatura).Value
+        
+        ' Conta faturas únicas
+        If fatura <> "" Then
+            faturasUnicas.Add Item:=fatura, Key:=CStr(fatura)
+        End If
+        
+        ' Conta os CTEs
+        For col = 1 To colFatura - 1
+            cte = wsOrigem.Cells(linOrigem, col).Value
+            If cte <> "" Then
+                totalCTEs = totalCTEs + 1
+            End If
+        Next col
+    Next linOrigem
+    
+    ' Restaura o alerta de erros
+    On Error GoTo 0
+    
+    ' Exibe o resultado na tela
+    MsgBox "Resumo dos Dados:" & vbCrLf & vbCrLf & _
+           "Total de CTEs: " & totalCTEs & vbCrLf & _
+           "Total de Faturas (Únicas): " & faturasUnicas.Count, vbInformation, "Contagem Concluída"
+           
+End Sub
+
